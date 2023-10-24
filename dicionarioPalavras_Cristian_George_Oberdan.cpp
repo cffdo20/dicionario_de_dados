@@ -23,7 +23,7 @@ struct Palavras  //Lista de Palavras
 {
     string palavra;//palavra do no
     string descricao;
-    struct Palavras *proxPalavra;//ponteiro para o próximo no
+    struct Palavras *proxPalavra;//ponteiro para o prï¿½ximo no
 };
 typedef struct  //tipo Letra
 {
@@ -33,7 +33,7 @@ typedef struct  //tipo Letra
 } Letra;
 struct Dicionario  //lista de letras
 {
-    Letra letra;//variável do tipo Letra do no
+    Letra letra;//variï¿½vel do tipo Letra do no
     struct Dicionario *proxLetra;//ponteiro para a proxima Letra do no
     struct Dicionario *antLetra;//ponteiro para a Letra anterior do no
 };
@@ -43,7 +43,7 @@ struct Palavras *pAuxPalavras;
 /*
 struct ListaPalavras {//Lista de Palavras
     string palavra;//palavra do no
-    struct ListaPalavras *proxPalavra;//ponteiro para o próximo no
+    struct ListaPalavras *proxPalavra;//ponteiro para o prï¿½ximo no
    };
 struct ListaLetras {//lista de letras
     string grafia;//letra do no
@@ -53,26 +53,33 @@ struct ListaLetras {//lista de letras
    };
 */
 
-//Funções CRUD para letras
+//Funï¿½ï¿½es CRUD para letras
 void excluirLetra();
 void pesquisarLetra();
 
-//Funções CRUD para palavras
+//Funï¿½ï¿½es CRUD para palavras
 void inserirPalavra();
 void excluirPalavra();
 void editarPalavra();
 void pesquisarPalavra();
 
-//Funções de listagem
+//Funï¿½ï¿½es de listagem
 void ordenarDicionario();
 void listarDicionario();
 
-//Funções de menu
+//Funï¿½ï¿½es de menu
 
 
-//Funções para arquivos
+//Funï¿½ï¿½es para arquivos
+void lerArquivos();
+void enviaPalavraParaArquivo();
 
-//Outras funções
+void enviaPalavraParaArquivo(){
+    cout << "Teste de envio de palavra para aquivo";
+    
+}
+
+//Outras funï¿½ï¿½es
 void gotoXY(int x, int y);
 void limpaTela();
 main()
@@ -84,11 +91,11 @@ main()
     system("pause");
     pesquisarPalavra();
 }
-//Funções CRUD para letras
+//Funï¿½ï¿½es CRUD para letras
 void excluirLetra() {}
 void pesquisarLetra() {}
 
-//Funções CRUD para palavras
+//Funï¿½ï¿½es CRUD para palavras
 void inserirPalavra()
 {
     char letras[1];
@@ -106,7 +113,7 @@ void inserirPalavra()
         gotoXY(1,2);
         cout << "*  Palavra:                                                       *";
         gotoXY(1,3);
-        cout<<  "*  Descrição:                                                        *";
+        cout<<  "*  Descriï¿½ï¿½o:                                                        *";
         cout << "\n*********************************************************************";
         gotoXY(20,2);
         fflush(stdin);
@@ -158,7 +165,7 @@ void inserirPalavra()
             while(pAuxPalavras->proxPalavra)
             {
                 if(pala.compare(pAuxPalavras->palavra)==0){
-                    cout << "ATENCAO: A palavra digitada já foi cadastrada! ";
+                    cout << "ATENCAO: A palavra digitada jï¿½ foi cadastrada! ";
                     break;
                 }
                 pAuxPalavras = pAuxPalavras->proxPalavra;
@@ -192,7 +199,7 @@ void pesquisarPalavra()
             gotoXY(1,5);
             cout << "********************************  PESQUISAR PALAVRAS *********************************";
             gotoXY(1,7);
-            cout << "Que palavra você deseja pesquisar?";
+            cout << "Que palavra vocï¿½ deseja pesquisar?";
             gotoXY(36,7);
             fflush(stdin);
             gets(palavra);
@@ -232,14 +239,14 @@ void pesquisarPalavra()
                     gotoXY(1,5);
                     cout << "Palavra: " << pala;
                     gotoXY(1,6);
-                    cout << "Descrição da palavra: " << pAuxPalavras->descricao;
+                    cout << "Descriï¿½ï¿½o da palavra: " << pAuxPalavras->descricao;
                     gotoXY(1,7);
                     cout << "\n---------------------------------------------------------------------------";
                 }
                 else
                 {
                     gotoXY(1,9);
-                    cout << "ATENCAO: A palavra digitada não foi cadastrada! ";
+                    cout << "ATENCAO: A palavra digitada nï¿½o foi cadastrada! ";
                     cout << "\n---------------------------------------------------------------------------\n";
                     system("pause");
                 }
@@ -247,7 +254,7 @@ void pesquisarPalavra()
             else
             {
                 gotoXY(1,9);
-                cout << "ATENCAO: A palavra digitada não foi cadastrada! ";
+                cout << "ATENCAO: A palavra digitada nï¿½o foi cadastrada! ";
                 cout << "\n---------------------------------------------------------------------------\n";
                 system("pause");
             }
@@ -257,7 +264,7 @@ void pesquisarPalavra()
         else
         {
             gotoXY(15,18);
-            cout << "ATENCAO: Não existem palavras cadastradas! ";
+            cout << "ATENCAO: Nï¿½o existem palavras cadastradas! ";
             system("pause");
         }
         cout << "\nContinuar pesquisando palavras? Sim[S] Nao[outra tecla]---->";
@@ -267,7 +274,7 @@ void pesquisarPalavra()
     while (resp == 'S');
 }
 
-//Funções de listagem
+//Funï¿½ï¿½es de listagem
 void ordenarDicionario() {}
 void listarDicionario()
 {
@@ -281,7 +288,7 @@ void listarDicionario()
     system("pause");
 }
 
-//Outras funções
+//Outras funï¿½ï¿½es
 void gotoXY(int x, int y)
 {
     CursorPosition.X = x; // Locates column
