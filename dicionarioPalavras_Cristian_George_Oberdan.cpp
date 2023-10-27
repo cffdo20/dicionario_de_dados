@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <cstring>
 #include <string>
+#include <algorithm>
 #include <cstdlib>
 #include <stdlib.h>
 #include <iostream>
@@ -9,6 +10,7 @@
 #include <new>
 #include <windows.h>
 #include <sstream>
+#include <cctype>
 using namespace std;
 using std::cin;
 using std::getline;
@@ -40,22 +42,6 @@ struct Dicionario  //lista de letras
 struct Dicionario dicionarioInicio, *pAuxLetras, *pAuxLetras2;
 
 struct Palavras *pAuxPalavras;
-/*
-struct ListaPalavras {//Lista de Palavras
-    string palavra;//palavra do no
-    struct ListaPalavras *proxPalavra;//ponteiro para o próximo no
-   };
-struct ListaLetras {//lista de letras
-    string grafia;//letra do no
-    int quantidadePalavras;//quantidade de palavras iniciadas pela letra do no
-    struct ListaPalavras *palavras;//ponteiro para a lista de palavras iniciadas com a letra do no
-    struct ListaLetras *proxLetra;//ponteiro para a proxima Letra do nol
-   };
-*/
-
-//Funções CRUD para letras
-void excluirLetra();
-void pesquisarLetra();
 
 //Funções CRUD para palavras
 void inserirPalavra();
@@ -75,6 +61,7 @@ void listarDicionario();
 //Outras funções
 void gotoXY(int x, int y);
 void limpaTela();
+string maiusculo(string texto);
 main()
 {
     dicionarioInicio.proxLetra=NULL;
@@ -84,10 +71,6 @@ main()
     system("pause");
     pesquisarPalavra();
 }
-//Funções CRUD para letras
-void excluirLetra() {}
-void pesquisarLetra() {}
-
 //Funções CRUD para palavras
 void inserirPalavra()
 {
@@ -121,7 +104,7 @@ void inserirPalavra()
         {
             while(pAuxLetras2)
             {
-                if(letra==pAuxLetras2->letra.grafia)
+                if(maiusculo(letra)==maiusculo(pAuxLetras2->letra.grafia))
                 {
                     existe=1;
                     break;
@@ -152,12 +135,11 @@ void inserirPalavra()
         }
         else if(dicionarioInicio.proxLetra!=NULL||existe==1)
         {
-            pAuxLetras2->letra.quantidadePalavras++;
             pAuxPalavras= pAuxLetras2->letra.palavras;
-
             while(pAuxPalavras->proxPalavra)
             {
-                if(pala.compare(pAuxPalavras->palavra)==0){
+                if(maiusculo(pala).compare(maiusculo(pAuxPalavras->palavra))==0)
+                {
                     cout << "ATENCAO: A palavra digitada já foi cadastrada! ";
                     break;
                 }
@@ -168,6 +150,7 @@ void inserirPalavra()
             pAuxPalavras->palavra=palavra;
             pAuxPalavras->descricao=descricao;
             pAuxPalavras->proxPalavra=NULL;
+            pAuxLetras2->letra.quantidadePalavras++;
         }
 
         cout << "\nContinuar inserindo dados? Sim[S] Nao[outra tecla]---->";
@@ -176,7 +159,85 @@ void inserirPalavra()
     }
     while (resp == 'S');
 }
-void excluirPalavra() {}
+void excluirPalavra()
+{
+    char palavra[60];
+    char letras[1];
+    int existe=0;
+    do
+    {
+        if(dicionarioInicio.proxLetra != NULL)
+        {
+
+            system("cls");
+            gotoXY(1,5);
+            cout << "********************************  EXCLUIR PALAVRAS *********************************";
+            gotoXY(1,7);
+            cout << "Que palavra você deseja excluir?";
+            gotoXY(36,7);
+            fflush(stdin);
+            gets(palavra);
+            fflush(stdin);
+            fflush(stdin);
+            string letra(palavra, 1);
+            string pala(palavra);
+            pAuxLetras = dicionarioInicio.proxLetra;
+            while(pAuxLetras)
+            {
+                if(letra==pAuxLetras->letra.grafia)
+                {
+                    existe=1;
+                    break;
+                }
+                pAuxLetras = pAuxLetras->proxLetra;
+            }
+            if(existe==1 && pAuxLetras->letra.palavras!=NULL)
+            {
+                pAuxPalavras=pAuxLetras->letra.palavras;
+                do
+                {
+                    if(pala.compare(pAuxPalavras->palavra)==0)
+                    {
+                        existe=2;
+                        break;
+                    }
+                    pAuxPalavras=pAuxPalavras->proxPalavra;
+                }
+                while(pAuxPalavras);
+                if(existe==2&&pAuxPalavras!=NULL)
+                {
+
+                }
+                else
+                {
+                    gotoXY(1,9);
+                    cout << "ATENCAO: A palavra digitada não foi cadastrada! ";
+                    cout << "\n---------------------------------------------------------------------------\n";
+                    system("pause");
+                }
+            }
+            else
+            {
+                gotoXY(1,9);
+                cout << "ATENCAO: A palavra digitada não foi cadastrada! ";
+                cout << "\n---------------------------------------------------------------------------\n";
+                system("pause");
+            }
+            cout<<"\n";
+            system("pause");
+        }
+        else
+        {
+            gotoXY(15,18);
+            cout << "ATENCAO: Não existem palavras cadastradas! ";
+            system("pause");
+        }
+        cout << "\nContinuar pesquisando palavras? Sim[S] Nao[outra tecla]---->";
+        cin >> resp;
+        resp = toupper(resp);
+    }
+    while (resp == 'S');
+}
 void editarPalavra() {}
 void pesquisarPalavra()
 {
@@ -221,7 +282,8 @@ void pesquisarPalavra()
                         break;
                     }
                     pAuxPalavras=pAuxPalavras->proxPalavra;
-                }while(pAuxPalavras);
+                }
+                while(pAuxPalavras);
                 if(existe==2&&pAuxPalavras!=NULL)
                 {
                     limpaTela();
@@ -274,10 +336,12 @@ void listarDicionario()
     limpaTela();
     pAuxLetras = dicionarioInicio.proxLetra;
 
-    do{
+    do
+    {
         cout<<pAuxLetras->letra.palavras->proxPalavra->palavra;
         pAuxLetras=pAuxLetras->proxLetra;
-    }while(pAuxLetras->proxLetra);
+    }
+    while(pAuxLetras->proxLetra);
     system("pause");
 }
 
@@ -291,4 +355,8 @@ void gotoXY(int x, int y)
 void limpaTela()
 {
     system("cls");
+}
+string maisculo(string texto) {
+  transform(texto.begin(), texto.end(), texto.begin(), ::toupper);
+  return texto;
 }
