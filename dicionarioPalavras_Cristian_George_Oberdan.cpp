@@ -37,9 +37,9 @@ struct Dicionario  //lista de letras
     struct Dicionario *proxLetra;//ponteiro para a proxima Letra do no
     struct Dicionario *antLetra;//ponteiro para a Letra anterior do no
 };
-struct Dicionario dicionarioInicio, *pAuxLetras, *pAuxLetras2, *pAuxLetraExclusao;
+struct Dicionario dicionarioInicio, *pAuxLetras, *pAuxLetras2, *pAuxLetras3, *pAuxLetraExclusao;
 
-struct Palavras *pAuxPalavras, *pAuxPalavraExclusao;
+struct Palavras *pAuxPalavras, *pAuxPalavras2, *pAuxPalavraExclusao, *pAuxPalavraEdicao;
 /*
 struct ListaPalavras {//Lista de Palavras
     string palavra;//palavra do no
@@ -62,6 +62,7 @@ void inserirPalavra();
 void excluirPalavra();
 void editarPalavra();
 void pesquisarPalavra();
+void excluirPalavraEdicao(string pala, string letra);
 
 //Funções de listagem
 void ordenarDicionario();
@@ -80,8 +81,10 @@ main()
     dicionarioInicio.proxLetra=NULL;
     setlocale(LC_ALL, "portuguese");
     inserirPalavra();
-    pesquisarPalavra();
-    excluirPalavra();
+    listarDicionario();
+    //pesquisarPalavra();
+    editarPalavra();
+    listarDicionario();
     pesquisarPalavra();
 }
 //Funções CRUD para letras
@@ -240,7 +243,7 @@ void excluirPalavra() {
                         delete(pAuxPalavraExclusao);
                         pAuxLetras->letra.quantidadePalavras--;
                         if(pAuxLetras->letra.quantidadePalavras==0||pAuxLetras->letra.palavras==NULL){
-                                pAuxLetras->antLetra->proxLetra==pAuxLetras->proxLetra;
+                                pAuxLetras->antLetra->proxLetra=pAuxLetras->proxLetra;
                                 delete(pAuxLetras);
                         }
                     }
@@ -276,7 +279,260 @@ void excluirPalavra() {
     }
     while (resp == 'S');
 }
-void editarPalavra() {}
+void excluirPalavraEdicao(string pala, string letra) {
+    int existe=0;
+        pAuxLetras = dicionarioInicio.proxLetra;
+            while(pAuxLetras)
+            {
+                if(letra==pAuxLetras->letra.grafia)
+                {
+                    existe=1;
+                    break;
+                }
+                pAuxLetras = pAuxLetras->proxLetra;
+            }
+            if(existe==1 && pAuxLetras->letra.palavras!=NULL)
+            {
+                pAuxPalavras=pAuxLetras->letra.palavras;
+                while(pAuxPalavras->proxPalavra)
+                {
+                    if(pala.compare(pAuxPalavras->proxPalavra->palavra)==0)
+                    {
+                        pAuxPalavraExclusao=pAuxPalavras->proxPalavra;
+                        existe=2;
+                        break;
+                    }
+                    pAuxPalavras=pAuxPalavras->proxPalavra;
+                }
+                if(existe==2&&pAuxPalavras!=NULL)
+                {
+
+                    pAuxPalavras->proxPalavra=pAuxPalavraExclusao->proxPalavra;
+                    pAuxPalavraExclusao->proxPalavra=NULL;
+                    delete(pAuxPalavraExclusao);
+                    pAuxLetras->letra.quantidadePalavras--;
+                    if(pAuxLetras->letra.quantidadePalavras==0||pAuxLetras->letra.palavras==NULL){
+                            pAuxLetras->antLetra->proxLetra=pAuxLetras->proxLetra;
+                            delete(pAuxLetras);
+                    }
+
+                }
+            }
+}
+void editarPalavra() {
+    char palavra[60], palavra2[60];
+    char letras[1];
+    int existe=0;
+    int opcao;
+    string descricao;
+    do
+    {
+        if(dicionarioInicio.proxLetra != NULL)
+        {
+
+            system("cls");
+            gotoXY(1,5);
+            cout << "********************************  EDITAR PALAVRAS *********************************";
+            gotoXY(1,7);
+            cout << "Que palavra você deseja editar?";
+            gotoXY(36,7);
+            fflush(stdin);
+            gets(palavra);
+            fflush(stdin);
+            fflush(stdin);
+            string letra(palavra, 1);
+            string pala(palavra);
+            pAuxLetras = dicionarioInicio.proxLetra;
+            while(pAuxLetras)
+            {
+                if(letra==pAuxLetras->letra.grafia)
+                {
+                    existe=1;
+                    break;
+                }
+                pAuxLetras = pAuxLetras->proxLetra;
+            }
+            if(existe==1 && pAuxLetras->letra.palavras!=NULL)
+            {
+                pAuxPalavras=pAuxLetras->letra.palavras;
+                while(pAuxPalavras->proxPalavra)
+                {
+                    if(pala.compare(pAuxPalavras->proxPalavra->palavra)==0)
+                    {
+                        pAuxPalavraEdicao=pAuxPalavras->proxPalavra;
+                        existe=2;
+                        break;
+                    }
+                    pAuxPalavras=pAuxPalavras->proxPalavra;
+                }
+                descricao = pAuxPalavras->proxPalavra->descricao;
+                if(existe==2&&pAuxPalavras!=NULL)
+                {
+                    limpaTela();
+                    gotoXY(1,2);
+                    cout << "-------------------------DESEJA EDITAR A PALAVRA ABAIXO? Sim[S] Nao[outra tecla]  -------------------------\n";
+                    gotoXY(1,4);
+                    cout << "Letra: " << letra;
+                    gotoXY(1,5);
+                    cout << "Palavra: " << pala;
+                    gotoXY(1,6);
+                    cout << "Descrição da palavra: " << descricao;
+                    gotoXY(1,7);
+                    cout << "\n---------------------------------------------------------------------------";
+                    gotoXY(82,2);
+                    cin >> resp;
+                    resp = toupper(resp);
+                    if(resp == 'S'){
+                        do{
+                            limpaTela();
+                            gotoXY(1,2);
+                            cout << "---------------------------------------------------------------------------\n";
+                            gotoXY(1,4);
+                            cout << "O que deseja editar?: ";
+                            gotoXY(1,5);
+                            cout << "1 - Palavra;";
+                            gotoXY(1,6);
+                            cout << "2 - Descrição;";
+                            gotoXY(1,7);
+                            cout << "\n---------------------------------------------------------------------------";
+                            gotoXY(22,4);
+                            cin >> opcao;
+                            switch(opcao){
+                            case 1:
+                                excluirPalavraEdicao(pala, letra);
+                                limpaTela();
+                                gotoXY(1,2);
+                                cout << "---------------------------------------------------------------------------\n";
+                                gotoXY(1,4);
+                                cout << "Nova palavra: ";
+                                gotoXY(14,4);
+                                fflush(stdin);
+                                fflush(stdin);
+                                gets(palavra);
+                                if(palavra!=pala){
+                                    string letrar(palavra, 1);
+                                    string palas(palavra);
+                                    if(letrar!=letra){
+                                        pAuxLetras2=dicionarioInicio.proxLetra;
+                                        if(pAuxLetras2 != NULL)
+                                        {
+                                            while(pAuxLetras2)
+                                            {
+                                                if(letrar==pAuxLetras2->letra.grafia)
+                                                {
+                                                    existe=1;
+                                                    break;
+                                                }
+                                                pAuxLetras2 = pAuxLetras2->proxLetra;
+                                            }
+                                        }
+                                        if(dicionarioInicio.proxLetra==NULL||existe!=1)
+                                        {
+                                            pAuxLetras3 = &dicionarioInicio;
+                                            while(pAuxLetras3->proxLetra)
+                                            {
+                                                pAuxLetras3 = pAuxLetras3->proxLetra;
+                                            }
+                                            pAuxLetras3->proxLetra = new Dicionario;
+                                            pAuxLetras3 = pAuxLetras3->proxLetra;
+                                            pAuxLetras3->letra.grafia=letrar;
+                                            pAuxLetras3->letra.quantidadePalavras++;
+                                            pAuxLetras3->letra.palavras = new Palavras;
+                                            pAuxPalavras2= pAuxLetras3->letra.palavras;
+                                            pAuxPalavras2->proxPalavra= new Palavras;
+                                            pAuxPalavras2= pAuxPalavras2->proxPalavra;
+                                            pAuxPalavras2->palavra=palas;
+                                            pAuxPalavras2->descricao=descricao;
+                                            pAuxPalavras2->proxPalavra=NULL;
+                                            pAuxLetras3->proxLetra = NULL;
+                                        }
+                                        else if(dicionarioInicio.proxLetra!=NULL||existe==1)
+                                        {
+                                            pAuxLetras2->letra.quantidadePalavras++;
+                                            pAuxPalavras2= pAuxLetras2->letra.palavras;
+
+                                            while(pAuxPalavras2->proxPalavra)
+                                            {
+                                                if(pala.compare(pAuxPalavras2->palavra)==0){
+                                                    cout << "ATENCAO: A palavra digitada já foi cadastrada! ";
+                                                    break;
+                                                }
+                                                pAuxPalavras2 = pAuxPalavras2->proxPalavra;
+                                            }
+                                            pAuxPalavras2->proxPalavra= new Palavras;
+                                            pAuxPalavras2= pAuxPalavras2->proxPalavra;
+                                            pAuxPalavras2->palavra=palas;
+                                            pAuxPalavras2->descricao=descricao;
+                                            pAuxPalavras2->proxPalavra=NULL;
+                                        }
+
+                                    }/*else if (letrar==pAuxLetras->letra.grafia){
+                                        pAuxPalavraEdicao->palavra=palas;
+                                    }*/
+                                }else{
+                                    limpaTela();
+                                    cout << "A palavra digitada é a mesma da cadastrada! Tente novamente.";
+                                    system("pause");
+                                    continue;
+                                }
+                                gotoXY(1,7);
+                                cout << "\n---------------------------------------------------------------------------";
+                                break;
+                            case 2:
+                                limpaTela();
+                                gotoXY(1,2);
+                                cout << "---------------------------------------------------------------------------\n";
+                                gotoXY(1,4);
+                                cout << "Nova descrição: ";
+                                gotoXY(16,4);
+                                fflush(stdin);
+                                getline(cin, pAuxPalavraEdicao->descricao);
+                                gotoXY(1,7);
+                                cout << "\n---------------------------------------------------------------------------";
+                                break;
+                            default:
+                                limpaTela();
+                                cout << "A opção digitada não existe! Tente novamente.";
+                                system("pause");
+                                continue;
+                            }
+                        }while(opcao!=1&&opcao!=2);
+
+                    }
+                    limpaTela();
+                }
+                else
+                {
+                    gotoXY(1,9);
+                    cout << "ATENCAO: A palavra digitada não foi cadastrada! ";
+                    cout << "\n---------------------------------------------------------------------------\n";
+                    system("pause");
+                }
+            }
+            else
+            {
+                gotoXY(1,9);
+                cout << "ATENCAO: A palavra digitada não foi cadastrada! ";
+                cout << "\n---------------------------------------------------------------------------\n";
+                system("pause");
+            }
+            cout<<"\n";
+            system("pause");
+            //excluirPalavraEdicao(pala, letra);
+        }
+        else
+        {
+            gotoXY(15,18);
+            cout << "ATENCAO: Não existem palavras cadastradas! ";
+            system("pause");
+        }
+        cout << "\nContinuar editando palavras? Sim[S] Nao[outra tecla]---->";
+        cin >> resp;
+        resp = toupper(resp);
+
+    }
+    while (resp == 'S');
+}
 void pesquisarPalavra()
 {
     char palavra[60];
@@ -370,16 +626,26 @@ void pesquisarPalavra()
 void ordenarDicionario() {}
 void listarDicionario()
 {
+    int i=1;
     limpaTela();
-    pAuxLetras = dicionarioInicio.proxLetra;
-
-    do{
-        cout<<pAuxLetras->letra.palavras->proxPalavra->palavra;
-        pAuxLetras=pAuxLetras->proxLetra;
-    }while(pAuxLetras->proxLetra);
+    pAuxLetras2 = dicionarioInicio.proxLetra;
+    while(pAuxLetras2){
+        cout << "\n---------------------------------------------------------------------------\n";
+        cout<<"Letra: "<<pAuxLetras2->letra.grafia<<endl;
+        pAuxPalavras=pAuxLetras2->letra.palavras->proxPalavra;
+        while(pAuxPalavras){
+        cout << "\n---------------------------------------------------------------------------\n";
+        cout<<"Palavra "<<i<<": "<<pAuxPalavras->palavra<<endl;
+        cout<<"Descrição "<<i<<": "<<pAuxPalavras->descricao<<endl;
+        cout << "\n---------------------------------------------------------------------------\n";
+        pAuxPalavras=pAuxPalavras->proxPalavra;
+        i++;
+        }
+        pAuxLetras2=pAuxLetras2->proxLetra;
+        cout << "\n---------------------------------------------------------------------------\n";
+    }
     system("pause");
 }
-
 //Outras funções
 void gotoXY(int x, int y)
 {
