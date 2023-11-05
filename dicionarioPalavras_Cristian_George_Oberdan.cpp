@@ -37,9 +37,9 @@ struct Dicionario  //lista de letras
     struct Dicionario *proxLetra;//ponteiro para a proxima Letra do no
     struct Dicionario *antLetra;//ponteiro para a Letra anterior do no
 };
-struct Dicionario dicionarioInicio, *pAuxLetras, *pAuxLetras2;
+struct Dicionario dicionarioInicio, *pAuxLetras, *pAuxLetras2, *pAuxLetraExclusao;
 
-struct Palavras *pAuxPalavras;
+struct Palavras *pAuxPalavras, *pAuxPalavraExclusao;
 /*
 struct ListaPalavras {//Lista de Palavras
     string palavra;//palavra do no
@@ -80,13 +80,11 @@ main()
     dicionarioInicio.proxLetra=NULL;
     setlocale(LC_ALL, "portuguese");
     inserirPalavra();
-    listarDicionario();
-    system("pause");
+    pesquisarPalavra();
+    excluirPalavra();
     pesquisarPalavra();
 }
 //Funções CRUD para letras
-void excluirLetra() {}
-void pesquisarLetra() {}
 
 //Funções CRUD para palavras
 void inserirPalavra()
@@ -176,7 +174,108 @@ void inserirPalavra()
     }
     while (resp == 'S');
 }
-void excluirPalavra() {}
+void excluirPalavra() {
+    char palavra[60];
+    char letras[1];
+    int existe=0;
+    do
+    {
+        if(dicionarioInicio.proxLetra != NULL)
+        {
+
+            system("cls");
+            gotoXY(1,5);
+            cout << "********************************  EXCLUIR PALAVRAS *********************************";
+            gotoXY(1,7);
+            cout << "Que palavra você deseja excluir?";
+            gotoXY(36,7);
+            fflush(stdin);
+            gets(palavra);
+            fflush(stdin);
+            fflush(stdin);
+            string letra(palavra, 1);
+            string pala(palavra);
+            pAuxLetras = dicionarioInicio.proxLetra;
+            while(pAuxLetras)
+            {
+                if(letra==pAuxLetras->letra.grafia)
+                {
+                    existe=1;
+                    break;
+                }
+                pAuxLetras = pAuxLetras->proxLetra;
+            }
+            if(existe==1 && pAuxLetras->letra.palavras!=NULL)
+            {
+                pAuxPalavras=pAuxLetras->letra.palavras;
+                while(pAuxPalavras->proxPalavra)
+                {
+                    if(pala.compare(pAuxPalavras->proxPalavra->palavra)==0)
+                    {
+                        pAuxPalavraExclusao=pAuxPalavras->proxPalavra;
+                        existe=2;
+                        break;
+                    }
+                    pAuxPalavras=pAuxPalavras->proxPalavra;
+                }
+                if(existe==2&&pAuxPalavras!=NULL)
+                {
+                    limpaTela();
+                    gotoXY(1,2);
+                    cout << "-------------------------DESEJA REMOVER A PALAVRA ABAIXO? Sim[S] Nao[outra tecla]  -------------------------\n";
+                    gotoXY(1,4);
+                    cout << "Letra: " << letra;
+                    gotoXY(1,5);
+                    cout << "Palavra: " << pala;
+                    gotoXY(1,6);
+                    cout << "Descrição da palavra: " << pAuxPalavras->proxPalavra->descricao;
+                    gotoXY(1,7);
+                    cout << "\n---------------------------------------------------------------------------";
+                    gotoXY(82,2);
+                    cin >> resp;
+                    resp = toupper(resp);
+                    if(resp == 'S'){
+                        pAuxPalavras->proxPalavra=pAuxPalavraExclusao->proxPalavra;
+                        pAuxPalavraExclusao->proxPalavra=NULL;
+                        delete(pAuxPalavraExclusao);
+                        pAuxLetras->letra.quantidadePalavras--;
+                        if(pAuxLetras->letra.quantidadePalavras==0||pAuxLetras->letra.palavras==NULL){
+                                pAuxLetras->antLetra->proxLetra==pAuxLetras->proxLetra;
+                                delete(pAuxLetras);
+                        }
+                    }
+                    limpaTela();
+                }
+                else
+                {
+                    gotoXY(1,9);
+                    cout << "ATENCAO: A palavra digitada não foi cadastrada! ";
+                    cout << "\n---------------------------------------------------------------------------\n";
+                    system("pause");
+                }
+            }
+            else
+            {
+                gotoXY(1,9);
+                cout << "ATENCAO: A palavra digitada não foi cadastrada! ";
+                cout << "\n---------------------------------------------------------------------------\n";
+                system("pause");
+            }
+            cout<<"\n";
+            system("pause");
+        }
+        else
+        {
+            gotoXY(15,18);
+            cout << "ATENCAO: Não existem palavras cadastradas! ";
+            system("pause");
+        }
+        cout << "\nContinuar excluindo palavras? Sim[S] Nao[outra tecla]---->";
+        cin >> resp;
+        resp = toupper(resp);
+    }
+    while (resp == 'S');
+}
 void editarPalavra() {}
 void pesquisarPalavra()
 {
