@@ -10,7 +10,9 @@
 #include <windows.h>
 #include <sstream>
 #include <fstream>
+#include<vector>
 #include <unistd.h>
+#include<algorithm>
 
 using namespace std;
 using std::cin;
@@ -41,6 +43,16 @@ struct Dicionario  //lista de letras
     struct Dicionario *proxLetra;//ponteiro para a proxima Letra do no
     struct Dicionario *antLetra;//ponteiro para a Letra anterior do no
 };
+typedef struct temporaryWords {
+    string primeiraLetra;
+    string palavra;
+    string descricao;
+    int posicao;
+    struct temporaryWords *proxPalavra;
+} temporaryWords;
+temporaryWords* headerT = new temporaryWords;
+temporaryWords* pAuxLetras5;
+temporaryWords* transporterT = new temporaryWords;
 
 struct Dicionario dicionarioInicio, *pAuxLetras, *pAuxLetras2, *pAuxLetras3, *pAuxLetras4, *pAuxLetraExclusao;
 
@@ -80,10 +92,14 @@ void menuPrincipal();
 //Fun��es para arquivos
 void lerDatabase();
 void inserirNoArquivo(string palavra, string descricao);
+int contarLinhaArquivo();
+void listarTemporary();
+void adicionarDicionario();
 
 //Outras fun��es
 void gotoXY(int x, int y);
 void limpaTela();
+string maiusculo(string texto);
 /* main()
 {
     dicionarioInicio.proxLetra=NULL;
@@ -98,8 +114,13 @@ void limpaTela();
 
 main()
 {
-    dicionarioInicio.proxLetra=NULL;
     setlocale(LC_ALL, "portuguese");
+    dicionarioInicio.proxLetra=NULL;
+    lerDatabase();
+    //listarTemporary();
+    //system("pause");
+    adicionarDicionario();
+
     do{
         menuPrincipal();
         switch(opc){
@@ -558,6 +579,10 @@ void editarPalavra() {
                                                     {
 
                                                         pAuxPalavras= pAuxLetras4->letra.palavras;
+                                                        while(pAuxPalavras->proxPalavra)
+                                                        {
+                                                            pAuxPalavras = pAuxPalavras->proxPalavra;
+                                                        }
                                                         pAuxPalavras->proxPalavra= new Palavras;
                                                         pAuxPalavras= pAuxPalavras->proxPalavra;
                                                         pAuxPalavras->palavra=pala;
@@ -672,7 +697,7 @@ void pesquisarPalavra()
             pAuxLetras = dicionarioInicio.proxLetra;
             while(pAuxLetras)
             {
-                if(letra==pAuxLetras->letra.grafia)
+                if(maiusculo(letra)==maiusculo(pAuxLetras->letra.grafia))
                 {
                     existe=1;
                     break;
@@ -684,7 +709,7 @@ void pesquisarPalavra()
                 pAuxPalavras=pAuxLetras->letra.palavras;
                 do
                 {
-                    if(pala.compare(pAuxPalavras->palavra)==0)
+                    if(maiusculo(pala)==maiusculo(pAuxPalavras->palavra))
                     {
                         existe=2;
                         break;
@@ -697,9 +722,9 @@ void pesquisarPalavra()
                     gotoXY(35,2);
                     cout << "---------------------------------------------------------------------------\n";
                     gotoXY(35,4);
-                    cout << "Letra: " << letra;
+                    cout << "Letra: " << pAuxLetras->letra.grafia;
                     gotoXY(35,5);
-                    cout << "Palavra: " << pala;
+                    cout << "Palavra: " << pAuxPalavras->palavra;
                     cout << "\n";
                     gotoXY(35,6);
                     cout << "Descricao da palavra: " << pAuxPalavras->descricao;
@@ -808,92 +833,136 @@ void limpaTela()
 
 
 // funcoes arquivos
+int contarLinhaArquivo(){
+  int count = 0;
+  string line;
+  fstream file("database.txt", ios::in | ios::out);
+  while(getline(file, line)){
+    count++;
+  }
+  file.close();
+  return count;
+};
+
+
+void listarTemporary() {
+  temporaryWords* aux = headerT;
+  while(aux != NULL){
+    cout << aux->primeiraLetra << "\n" << aux->palavra << ": \n" << aux->descricao << "\n";
+    aux = aux->proxPalavra;
+  }
+  delete aux;
+}
+
 
 void lerDatabase(){
-
   fstream database("database.txt", ios::in | ios::out);
+  int linhaAtual = 0;
+  int linhaFim = contarLinhaArquivo();
 
   if(!database.is_open()) std::cout << "O Sistema nao pode abrir o arquivo de database\n";
   else{
     string data;
     while(getline(database, data)){
-      char letras[1];
       int existe;
-      string descricao, sPalavra;
-
+      string descricao, palavra, letra;
       stringstream ss(data);
-      getline(ss, sPalavra, ';');
-      char* palavra = new char[sPalavra.length() + 1];
-      std::strcpy(palavra, sPalavra.c_str());
-
+      getline(ss, palavra, ';');
       getline(ss, descricao, ';');
 
-      string letra(palavra, 1);
-      string pala(palavra);
-      pAuxLetras2=dicionarioInicio.proxLetra;
+      temporaryWords* newWord = new temporaryWords;
 
+      if(linhaAtual == 0) {
+        newWord->palavra = palavra;
+        newWord->primeiraLetra = palavra[0];
+        newWord->descricao = descricao;
+        newWord->posicao = 0;
+        headerT = newWord;
+        transporterT = newWord;
+        linhaAtual++;
+      }else if(linhaAtual == linhaFim){
+        newWord->palavra = palavra;
+        newWord->primeiraLetra = palavra[0];
+        newWord->descricao = descricao;
+        newWord->posicao = linhaFim;
+        newWord->proxPalavra = NULL;
+        transporterT->proxPalavra = newWord;
+        transporterT = newWord;
+        linhaAtual++;
+      } else {
+        newWord->palavra = palavra;
+        newWord->primeiraLetra = palavra[0];
+        newWord->descricao = descricao;
+        transporterT->proxPalavra = newWord;
+        transporterT = newWord;
+        linhaAtual++;
+      }
 
-      cout << letra << endl;
+    }
+  }
 
-      pAuxLetras2=dicionarioInicio.proxLetra;
-      if(pAuxLetras2 != NULL)
+   database.close();
+}
+
+void adicionarDicionario(){
+
+    pAuxLetras5=headerT;
+    while(pAuxLetras5){
+            int existe=0;
+            string letra = pAuxLetras5->primeiraLetra;
+            string pala = pAuxLetras5->palavra;
+            string descricao= pAuxLetras5->descricao;
+
+            //cout<<"log1";
+            //system("pause");
+        pAuxLetras4=dicionarioInicio.proxLetra;
+        if(pAuxLetras4 != NULL)
         {
-            while(pAuxLetras2)
+            while(pAuxLetras4)
             {
-                if(letra==pAuxLetras2->letra.grafia)
+                if(letra==pAuxLetras4->letra.grafia)
                 {
                     existe=1;
                     break;
                 }
-                pAuxLetras2 = pAuxLetras2->proxLetra;
+                pAuxLetras4 = pAuxLetras4->proxLetra;
             }
         }
-
         if(dicionarioInicio.proxLetra==NULL||existe!=1)
         {
-            pAuxLetras = &dicionarioInicio;
-            while(pAuxLetras->proxLetra)
-            {
-                pAuxLetras = pAuxLetras->proxLetra;
-            }
-            pAuxLetras->proxLetra = new Dicionario;
-            pAuxLetras = pAuxLetras->proxLetra;
-            pAuxLetras->letra.grafia=letra;
-            pAuxLetras->letra.quantidadePalavras++;
-            pAuxLetras->letra.palavras = new Palavras;
-            pAuxPalavras= pAuxLetras->letra.palavras;
-            pAuxPalavras->proxPalavra= new Palavras;
-            pAuxPalavras= pAuxPalavras->proxPalavra;
-            pAuxPalavras->palavra=palavra;
-            pAuxPalavras->descricao=descricao;
-            pAuxPalavras->proxPalavra=NULL;
-            pAuxLetras->proxLetra = NULL;
-        }
-        else if(dicionarioInicio.proxLetra!=NULL||existe==1)
+        pAuxLetras3 = &dicionarioInicio;
+        while(pAuxLetras3->proxLetra)
         {
-            pAuxLetras2->letra.quantidadePalavras++;
-            pAuxPalavras= pAuxLetras2->letra.palavras;
-
+            pAuxLetras3 = pAuxLetras3->proxLetra;
+        }
+        pAuxLetras3->proxLetra = new Dicionario;
+        pAuxLetras3 = pAuxLetras3->proxLetra;
+        pAuxLetras3->letra.grafia=letra;
+        pAuxLetras3->letra.quantidadePalavras++;
+        pAuxLetras3->letra.palavras = new Palavras;
+        pAuxPalavras= pAuxLetras3->letra.palavras;
+        pAuxPalavras->proxPalavra= new Palavras;
+        pAuxPalavras= pAuxPalavras->proxPalavra;
+        pAuxPalavras->palavra=pala;
+        pAuxPalavras->descricao=descricao;
+        pAuxPalavras->proxPalavra=NULL;
+        pAuxLetras3->proxLetra = NULL;
+        }else if(dicionarioInicio.proxLetra!=NULL||existe==1)
+        {
+            pAuxPalavras= pAuxLetras4->letra.palavras;
             while(pAuxPalavras->proxPalavra)
             {
-                if(pala.compare(pAuxPalavras->palavra)==0){
-                    cout << "ATENCAO: A palavra digitada j� foi cadastrada! ";
-                    break;
-                }
                 pAuxPalavras = pAuxPalavras->proxPalavra;
             }
             pAuxPalavras->proxPalavra= new Palavras;
             pAuxPalavras= pAuxPalavras->proxPalavra;
-            pAuxPalavras->palavra=palavra;
+            pAuxPalavras->palavra=pala;
             pAuxPalavras->descricao=descricao;
+            pAuxLetras4->letra.quantidadePalavras++;
             pAuxPalavras->proxPalavra=NULL;
         }
-
+        pAuxLetras5 = pAuxLetras5->proxPalavra;
     }
-
-  }
-
-  database.close();
 }
 
 
@@ -906,5 +975,9 @@ void inserirNoArquivo(string palavra, string descricao){
     database << palavra << ";" << descricao << "\n";
   }
   database.close();
+}
+string maiusculo(string texto) {
+  transform(texto.begin(), texto.end(), texto.begin(), ::toupper);
+  return texto;
 }
 
