@@ -190,7 +190,7 @@ void inserirPalavra()
         {
             while(pAuxLetras2)
             {
-                if(letra==pAuxLetras2->letra.grafia)
+                if(maiusculo(letra)==maiusculo(pAuxLetras2->letra.grafia))
                 {
                     existe=1;
                     break;
@@ -208,13 +208,13 @@ void inserirPalavra()
             }
             pAuxLetras->proxLetra = new Dicionario;
             pAuxLetras = pAuxLetras->proxLetra;
-            pAuxLetras->letra.grafia=letra;
+            pAuxLetras->letra.grafia=maiusculo(letra);
             pAuxLetras->letra.quantidadePalavras++;
             pAuxLetras->letra.palavras = new Palavras;
             pAuxPalavras= pAuxLetras->letra.palavras;
             pAuxPalavras->proxPalavra= new Palavras;
             pAuxPalavras= pAuxPalavras->proxPalavra;
-            pAuxPalavras->palavra=palavra;
+            pAuxPalavras->palavra=maiusculo(pala);
             pAuxPalavras->descricao=descricao;
             pAuxPalavras->proxPalavra=NULL;
             pAuxLetras->proxLetra = NULL;
@@ -226,7 +226,7 @@ void inserirPalavra()
             pAuxPalavras= pAuxLetras2->letra.palavras;
             while(pAuxPalavras->proxPalavra)
             {
-                if(pala.compare(pAuxPalavras->proxPalavra->palavra)==0){
+                if(maiusculo(pala)==maiusculo(pAuxPalavras->proxPalavra->palavra)){
                     cout << "ATENCAO: A palavra digitada j� foi cadastrada! ";
                     existe=3;
                     system("pause");
@@ -238,7 +238,7 @@ void inserirPalavra()
                     existe =0; break;}
             pAuxPalavras->proxPalavra= new Palavras;
             pAuxPalavras= pAuxPalavras->proxPalavra;
-            pAuxPalavras->palavra=pala;
+            pAuxPalavras->palavra=maiusculo(pala);
             pAuxPalavras->descricao=descricao;
             pAuxLetras2->letra.quantidadePalavras++;
             pAuxPalavras->proxPalavra=NULL;
@@ -267,6 +267,7 @@ void excluirPalavra() {
             cout << "Que palavra voce deseja excluir?";
             gotoXY(68,7);
             fflush(stdin);
+            cin.ignore();
             gets(palavra);
             fflush(stdin);
             fflush(stdin);
@@ -275,7 +276,7 @@ void excluirPalavra() {
             pAuxLetras = &dicionarioInicio;
             while(pAuxLetras->proxLetra)
             {
-                if(letra.compare(pAuxLetras->proxLetra->letra.grafia)==0)
+                if((letra)==(pAuxLetras->proxLetra->letra.grafia))
                 {
                     pAuxLetraExclusao=pAuxLetras->proxLetra;
                     existe=1;
@@ -289,7 +290,7 @@ void excluirPalavra() {
                 pAuxPalavras=pAuxLetraExclusao->letra.palavras;
                 while(pAuxPalavras->proxPalavra)
                 {
-                    if(pala.compare(pAuxPalavras->proxPalavra->palavra)==0)
+                    if(maiusculo(pala)==(pAuxPalavras->proxPalavra->palavra))
                     {
                         pAuxPalavraExclusao=pAuxPalavras->proxPalavra;
                         existe=2;
@@ -362,7 +363,7 @@ void excluirPalavraEdicao(string pala, string letra) {
         pAuxLetras = &dicionarioInicio;
             while(pAuxLetras->proxLetra)
             {
-                if(letra.compare(pAuxLetras->proxLetra->letra.grafia)==0)
+                if(maiusculo(letra)==maiusculo(pAuxLetras->proxLetra->letra.grafia))
                 {
                     pAuxLetraExclusao=pAuxLetras->proxLetra;
                     existe=1;
@@ -376,7 +377,7 @@ void excluirPalavraEdicao(string pala, string letra) {
                 pAuxPalavras=pAuxLetraExclusao->letra.palavras;
                 while(pAuxPalavras->proxPalavra)
                 {
-                    if(pala.compare(pAuxPalavras->proxPalavra->palavra)==0)
+                    if(maiusculo(pala)==maiusculo(pAuxPalavras->proxPalavra->palavra))
                     {
                         pAuxPalavraExclusao=pAuxPalavras->proxPalavra;
                         existe=2;
@@ -419,6 +420,7 @@ void editarPalavra() {
             cout << "Que palavra voce deseja editar?";
             gotoXY(70,5);
             fflush(stdin);
+            cin.ignore();
             gets(palavra);
             fflush(stdin);
             fflush(stdin);
@@ -427,7 +429,7 @@ void editarPalavra() {
             pAuxLetras = dicionarioInicio.proxLetra;
             while(pAuxLetras)
             {
-                if(letra==pAuxLetras->letra.grafia)
+                if(maiusculo(letra)==maiusculo(pAuxLetras->letra.grafia))
                 {
                     existe=1;
                     break;
@@ -439,7 +441,7 @@ void editarPalavra() {
                 pAuxPalavras=pAuxLetras->letra.palavras;
                 while(pAuxPalavras->proxPalavra)
                 {
-                    if(pala.compare(pAuxPalavras->proxPalavra->palavra)==0)
+                    if(maiusculo(pala)==maiusculo(pAuxPalavras->proxPalavra->palavra))
                     {
                         pAuxPalavraEdicao=pAuxPalavras->proxPalavra;
                         existe=2;
@@ -466,6 +468,7 @@ void editarPalavra() {
                     //gotoXY(82,2);
                     gotoXY(35,15);
                     cout << "DESEJA EDITAR A PALAVRA ACIMA? Sim[S] Nao[outra tecla] ";
+                    fflush(stdin);
                     cin >> resp;
                     resp = toupper(resp);
                     if(resp == 'S'){
@@ -498,13 +501,13 @@ void editarPalavra() {
                                 if(palavra!=pala){
                                     string letrar(palavra, 1);
                                     string palas(palavra);
-                                    if(letrar!=letra){
+                                    if(maiusculo(letrar)!=maiusculo(letra)){
                                         pAuxLetras2=dicionarioInicio.proxLetra;
                                         if(pAuxLetras2 != NULL)
                                         {
                                             while(pAuxLetras2)
                                             {
-                                                if(letrar==pAuxLetras2->letra.grafia)
+                                                if(maiusculo(letrar)==maiusculo(pAuxLetras2->letra.grafia))
                                                 {
                                                     existe=1;
                                                     break;
@@ -521,13 +524,13 @@ void editarPalavra() {
                                             }
                                             pAuxLetras3->proxLetra = new Dicionario;
                                             pAuxLetras3 = pAuxLetras3->proxLetra;
-                                            pAuxLetras3->letra.grafia=letrar;
+                                            pAuxLetras3->letra.grafia=maiusculo(letrar);
                                             pAuxLetras3->letra.quantidadePalavras++;
                                             pAuxLetras3->letra.palavras = new Palavras;
                                             pAuxPalavras2= pAuxLetras3->letra.palavras;
                                             pAuxPalavras2->proxPalavra= new Palavras;
                                             pAuxPalavras2= pAuxPalavras2->proxPalavra;
-                                            pAuxPalavras2->palavra=palas;
+                                            pAuxPalavras2->palavra=maiusculo(palas);
                                             pAuxPalavras2->descricao=descricao2;
                                             pAuxPalavras2->proxPalavra=NULL;
                                             pAuxLetras3->proxLetra = NULL;
@@ -565,13 +568,13 @@ void editarPalavra() {
                                                     }
                                                     pAuxLetras3->proxLetra = new Dicionario;
                                                     pAuxLetras3 = pAuxLetras3->proxLetra;
-                                                    pAuxLetras3->letra.grafia=letra;
+                                                    pAuxLetras3->letra.grafia=maiusculo(letra);
                                                     pAuxLetras3->letra.quantidadePalavras++;
                                                     pAuxLetras3->letra.palavras = new Palavras;
                                                     pAuxPalavras= pAuxLetras3->letra.palavras;
                                                     pAuxPalavras->proxPalavra= new Palavras;
                                                     pAuxPalavras= pAuxPalavras->proxPalavra;
-                                                    pAuxPalavras->palavra=pala;
+                                                    pAuxPalavras->palavra=maiusculo(pala);
                                                     pAuxPalavras->descricao=descricao;
                                                     pAuxPalavras->proxPalavra=NULL;
                                                     pAuxLetras3->proxLetra = NULL;
@@ -585,7 +588,7 @@ void editarPalavra() {
                                                         }
                                                         pAuxPalavras->proxPalavra= new Palavras;
                                                         pAuxPalavras= pAuxPalavras->proxPalavra;
-                                                        pAuxPalavras->palavra=pala;
+                                                        pAuxPalavras->palavra=maiusculo(pala);
                                                         pAuxPalavras->descricao=descricao;
                                                         pAuxLetras4->letra.quantidadePalavras++;
                                                         pAuxPalavras->proxPalavra=NULL;
@@ -599,7 +602,7 @@ void editarPalavra() {
 
                                             pAuxPalavras2->proxPalavra= new Palavras;
                                             pAuxPalavras2= pAuxPalavras2->proxPalavra;
-                                            pAuxPalavras2->palavra=pala;
+                                            pAuxPalavras2->palavra=maiusculo(pala);
                                             pAuxPalavras2->descricao=descricao2;
                                             pAuxLetras2->letra.quantidadePalavras++;
                                             pAuxPalavras2->proxPalavra=NULL;
@@ -937,13 +940,13 @@ void adicionarDicionario(){
         }
         pAuxLetras3->proxLetra = new Dicionario;
         pAuxLetras3 = pAuxLetras3->proxLetra;
-        pAuxLetras3->letra.grafia=letra;
+        pAuxLetras3->letra.grafia=maiusculo(letra);
         pAuxLetras3->letra.quantidadePalavras++;
         pAuxLetras3->letra.palavras = new Palavras;
         pAuxPalavras= pAuxLetras3->letra.palavras;
         pAuxPalavras->proxPalavra= new Palavras;
         pAuxPalavras= pAuxPalavras->proxPalavra;
-        pAuxPalavras->palavra=pala;
+        pAuxPalavras->palavra=maiusculo(pala);
         pAuxPalavras->descricao=descricao;
         pAuxPalavras->proxPalavra=NULL;
         pAuxLetras3->proxLetra = NULL;
@@ -956,7 +959,7 @@ void adicionarDicionario(){
             }
             pAuxPalavras->proxPalavra= new Palavras;
             pAuxPalavras= pAuxPalavras->proxPalavra;
-            pAuxPalavras->palavra=pala;
+            pAuxPalavras->palavra=maiusculo(pala);
             pAuxPalavras->descricao=descricao;
             pAuxLetras4->letra.quantidadePalavras++;
             pAuxPalavras->proxPalavra=NULL;
