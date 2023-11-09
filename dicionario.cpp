@@ -266,7 +266,7 @@ void excluirPalavra() {
             gotoXY(35,7);
             cout << "Que palavra voce deseja excluir?";
             gotoXY(68,7);
-            fflush(stdin);
+            fflush(stdin); 
             cin.ignore();
             gets(palavra);
             fflush(stdin);
